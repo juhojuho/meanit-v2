@@ -1,0 +1,50 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "users": {
+      ".indexOn": [
+        "num_like",
+        "my_kk",
+        "num_it"
+      ]
+    },
+    "it": {
+      ".indexOn": [
+        "timestamp"
+      ]
+    },
+    "nicknames": {
+      ".indexOn": [
+        "nickname"
+      ]
+    },
+    "alarms": {
+      "$uid": {
+        ".read": "auth !== null && $uid === auth.uid",
+        ".indexOn": [
+          "timestamp"
+        ],
+        "$aid": {
+          "read": {
+            ".write": "auth !== null && $uid === auth.uid"
+          }
+        }
+      }
+    },
+    "home": {
+      "trending": {
+        "$dateKey": {
+          ".indexOn": [
+            "kk"
+          ]
+        }
+      },
+      "new": {
+        ".indexOn": [
+          "timestamp"
+        ]
+      }
+    }
+  }
+}
