@@ -18,10 +18,10 @@
     </long-post>
     <long-post v-for="(post, index) in posts" :post="post" :key="index" :userInfo="postsUserInfo[index]" :index="index" :itTop="false" :isLong="true" style="margin-bottom: 20px"></long-post>
     <div style="padding-left: 20px; padding-right: 20px;">
-      <div v-if="filteredSynonyms.length" class="synonym-header">
+      <div v-if="synonyms.length" class="synonym-header">
         <b>{{ it }}</b>와(과) 연관된 다른 it
       </div>
-      <synonym :synonyms="filteredSynonyms" style="margin-bottom: 48px;"></synonym>
+      <synonym :synonyms="synonyms" style="margin-bottom: 48px;"></synonym>
     </div>
     <div style="margin-top: 36px">
       <it-list></it-list>
@@ -59,11 +59,6 @@ export default {
     its() {
       return this.$store.state.its;
     },
-    filteredSynonyms() {
-      return this.synonyms.filter(synonym => {
-        return this.its.includes(synonym.synonym);
-      });
-    }
   },
   created() {
     if (this.$route.query.sort === "time") {
@@ -158,12 +153,14 @@ export default {
                           const tempUserInfo = userData;
                           // hashtag
                           itData.hashtags.forEach(synonym => {
-                            const synonymIndex = names.indexOf(synonym);
-                            if (synonymIndex === -1) {
-                              names.push(synonym);
-                              freqs.push(1);
-                            } else {
-                              freqs[synonymIndex] += 1;
+                            if (this.its.includes(synonym)) {
+                              const synonymIndex = names.indexOf(synonym);
+                              if (synonymIndex === -1) {
+                                names.push(synonym);
+                                freqs.push(1);
+                              } else {
+                                freqs[synonymIndex] += 1;
+                              }
                             }
                           });
                           // kk

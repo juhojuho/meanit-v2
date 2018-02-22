@@ -32,7 +32,7 @@ export default {
   computed: {
     swiper() {
       return this.$refs.synonymSwiper.swiper;
-    }
+    },
   },
   methods: {
     toItPage(synonym) {

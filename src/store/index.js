@@ -10,6 +10,7 @@ export default new Vuex.Store({
     alarms: [],
     unread: 0,
     its: [],
+    collections: '',
   },
   mutations: {
     change(state, user) {
@@ -35,5 +36,8 @@ export default new Vuex.Store({
     setIts(state, its) {
       state.its = its;
     },
+    setCollections(state, collections) {
+      state.collections = collections;
+    }
   },
 });

@@ -300,10 +300,25 @@ exports.saveUserPic = functions.https.onRequest((req, res) => {
 exports.isValid = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     const url = urlencode(req.query.url);
-    const api_key = 'e8ebb4da35fa0831a63ee9';
+    const api_key = 'ecb6fecc9a157ce8a0877a';
     axios.get(`http://iframe.ly/api/iframely?url=${url}&api_key=${api_key}`)
       .then((mediaRes) => {
         res.json({ valid: true });
+      })
+      .catch((error) => {
+        res.json({ valid: false })
+      });
+  });
+});
+
+exports.getIframely = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    const url = urlencode(req.query.url);
+    const api_key = 'ecb6fecc9a157ce8a0877a';
+    axios.get(`http://iframe.ly/api/iframely?api_key=${api_key}&url=${url}`)
+      .then((mediaRes) => {
+        console.log(mediaRes.data);
+        res.send(mediaRes.data);
       })
       .catch((error) => {
         res.json({ valid: false })

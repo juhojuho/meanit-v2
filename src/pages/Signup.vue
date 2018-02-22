@@ -41,38 +41,41 @@
 export default {
   data() {
     return {
-      newEmail: '',
-      newNickname: '',
-      selectedYear: '',
-      selectedMonth: '',
-      warningMessage: '',
+      newEmail: "",
+      newNickname: "",
+      selectedYear: "",
+      selectedMonth: "",
+      warningMessage: "",
       showWarningMessage: false,
-      nicknames: [],
+      nicknames: []
     };
   },
   computed: {
     missingInput() {
       if (this.showWarningMessage) {
         if (!this.newEmail) {
-          return 'email';
+          return "email";
         } else if (!this.newNickname) {
-          return 'nickname';
+          return "nickname";
         } else if (!this.selectedMonth) {
-          return 'month';
+          return "month";
         } else if (!this.selectedYear) {
-          return 'year';
+          return "year";
         }
       }
-      return '';
-    },
+      return "";
+    }
   },
   created() {
-    this.$db.ref('/nicknames').once('value').then((snapshot) => {
-      snapshot.forEach((childSnapshot) => {
-        const nickname = childSnapshot.val().nickname;
-        this.nicknames.push(nickname);
+    this.$db
+      .ref("/nicknames")
+      .once("value")
+      .then(snapshot => {
+        snapshot.forEach(childSnapshot => {
+          const nickname = childSnapshot.val().nickname;
+          this.nicknames.push(nickname);
+        });
       });
-    });
   },
   methods: {
     typingEmail(e) {
@@ -86,38 +89,42 @@ export default {
       if (this.validate()) {
         const updates = {};
         const uid = this.$store.state.user.uid;
-        updates[`birth/year`] = this.selectedYear;
-        updates[`birth/month`] = this.selectedMonth;
-        updates[`nickname`] = this.newNickname;
-        updates[`email`] = this.newEmail;
-        updates[`addNickname`] = true;
-        this.$db.ref(`/users/${uid}`).update(updates);
-        this.$router.push('/');
+        updates['birth/year'] = this.selectedYear;
+        updates['birth/month'] = this.selectedMonth;
+        updates['nickname'] = this.newNickname;
+        updates['email'] = this.newEmail;
+        updates["addNickname"] = true;
+        this.$db
+          .ref(`/users/${uid}`)
+          .update(updates)
+          .then(() => {
+            this.$router.push("/");
+          });
       }
     },
     validate() {
       const regExp = /[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]/;
       const emailRegExp = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (this.missingInput) {
-        this.warningMessage = '모든 내용을 입력해주세요!';
+        this.warningMessage = "모든 내용을 입력해주세요!";
         return false;
       } else if (regExp.test(this.newNickname)) {
-        this.warningMessage = '닉네임을 바르게 입력해주세요!';
+        this.warningMessage = "닉네임을 바르게 입력해주세요!";
         return false;
       } else if (!emailRegExp.test(this.newEmail)) {
-        this.warningMessage = '이메일을 바르게 입력해주세요!';
+        this.warningMessage = "이메일을 바르게 입력해주세요!";
         return false;
       } else if (this.newNickname > 10) {
-        this.warningMessage = '닉네임은 10자를 초과할 수 없습니다.';
+        this.warningMessage = "닉네임은 10자를 초과할 수 없습니다.";
         return false;
       } else if (this.nicknames.includes(this.newNickname)) {
-        this.warningMessage = '이미 사용중인 닉네임입니다ㅠㅠ';
+        this.warningMessage = "이미 사용중인 닉네임입니다ㅠㅠ";
         return false;
       }
-      this.warningMessage = '';
+      this.warningMessage = "";
       return true;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -135,7 +142,7 @@ export default {
 .email-input {
   width: 321px;
   height: 45px;
-  background: url('../assets/images/empty.png') center center no-repeat;
+  background: url("../assets/images/empty.png") center center no-repeat;
   background-size: cover;
   resize: none;
   overflow: auto;
@@ -147,7 +154,7 @@ export default {
 .nickname-input {
   width: 321px;
   height: 45px;
-  background: url('../assets/images/nickname.png') center center no-repeat;
+  background: url("../assets/images/nickname.png") center center no-repeat;
   background-size: cover;
   resize: none;
   overflow: auto;

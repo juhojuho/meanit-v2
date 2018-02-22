@@ -28,32 +28,18 @@
       </ul>
     </div>
     <div style="margin-top: 38px" class="title">
-      나만의 한 끗 더하기 (찡끗)
+      나만의 한 끗 더하기 (옵션)
     </div>
     <div class="sub-title">
       이미지, 뉴스, 짤, 영상 등과 같은 다양한 방법으로<br>너의 생각을 더 표현해줘!
     </div>
-    <div class="helper-container">
-      <img v-if="helperMedia !== 'twitter'" @click="helperMedia = 'twitter'" class="helper-icon" src="../assets/images/twitter-off.png">
-      <img v-if="helperMedia === 'twitter'" @click="helperMedia = ''" class="helper-icon" src="../assets/images/twitter-on.png">
-      <img v-if="helperMedia !== 'instagram'" @click="helperMedia = 'instagram'" class="helper-icon" src="../assets/images/instagram-off.png">
-      <img v-if="helperMedia === 'instagram'" class="helper-icon" src="../assets/images/instagram-on.png">
-      <img v-if="helperMedia !== 'youtube'" @click="helperMedia = 'youtube'" class="helper-icon" src="../assets/images/youtube-off.png">
-      <img v-if="helperMedia === 'youtube'" @click="helperMedia" class="helper-icon" src="../assets/images/youtube-on.png">
-      <img v-if="helperMedia !== 'image'" @click="helperMedia = 'image'" class="helper-icon" src="../assets/images/image-off.png">
-      <img v-if="helperMedia === 'image'" @click="helperMedia = ''" class="helper-icon" src="../assets/images/image-on.png">
-      <img v-if="helperMedia !== 'gif'" @click="helperMedia = 'gif'" class="helper-icon" src="../assets/images/gif-off.png">
-      <img v-if="helperMedia === 'gif'" @click="helperMedia = ''" class="helper-icon" src="../assets/images/gif-on.png">
-      <img v-if="helperMedia !== 'news'" @click="helperMedia = 'news'" class="helper-icon" src="../assets/images/news-off.png">
-      <img v-if="helperMedia === 'news'" @click="helperMedia = ''" class="helper-icon" src="../assets/images/news-on.png">
-    </div>
-    <div v-if="helperMedia" class="query-container">
+    <div class="query-container">
       <textarea class="link-input" :class="{'no-background': newLink}" @input="typingLink" :value="newLink"></textarea>
       <img v-if="!newLink" src="../assets/images/icon-search-off.png" class="search">
       <img v-if="newLink" src="../assets/images/icon-search-on.png" class="search" @click="sendValidation">
     </div>
-    <square-loader :loading="loading" :color="color" class="loader" :size="size"></square-loader>
-    <div v-if="helperMedia && isValidUrl" class="url">
+    <square-loader :loading="loading" :color="color" style="margin-top: 10px;" :size="size"></square-loader>
+    <div v-if="isValidUrl" class="url">
       <a :href="newLink" data-iframely-url class="iframely"></a>
     </div>
     <div v-if="showWarningMessage" class="warning-message">
@@ -80,7 +66,6 @@ export default {
       synonyms: [],
       newLink: '',
       helperType: '',
-      helperMedia: '',
       open: false,
       suggestions: [],
       api: 'https://api.meanit.me',
@@ -121,11 +106,8 @@ export default {
       } else if (!this.synonyms.length) {
         this.warningMessage = '연관된 단어를 적어도 하나 입력해 주세요.';
         return false;
-      } else if (!this.newLink) {
-        this.warningMessage = '나만의 한 끗을 입력해 주세요.';
-        return false;
-      } else if (!this.isValidUrl) {
-        this.warningMessage = '유효한 한 끗을 입력해 주세요.';
+      } else if (this.newLink && !this.isValidUrl) {
+        this.warningMessage = '한 끗이 유효하지 않습니다.';
         return false;
       }
       return true;
@@ -185,7 +167,6 @@ export default {
         });
         this.$db.ref(`/it/${newKey}`).set({
           text: this.newDescription,
-          type: this.helperMedia,
           timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
           url: this.newLink,
           hashtags: this.synonyms,
@@ -201,6 +182,8 @@ export default {
     },
     sendValidation() {
       this.loading = true;
+      this.warningMessage = '';
+      this.showWarningMessage = false;
       this.$axios.get(`https://us-central1-meanit-91a3c.cloudfunctions.net/isValid?url=${this.newLink}`).then((res) => {
         if (res.data.valid) {
           this.isValidUrl = true;
@@ -209,6 +192,10 @@ export default {
             window.iframely.load();
           }, 100);
         } else {
+          this.warningMessage = '한 끗이 유효하지 않습니다.';
+          this.showWarningMessage = true;
+          this.isValidUrl = false;
+          this.loading = false;
         }
       });
     },
@@ -459,6 +446,7 @@ export default {
 
 .query-container {
   position: relative;
+  margin-top: 30px;
 }
 
 .news-container {

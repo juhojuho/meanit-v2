@@ -17,6 +17,8 @@ import Alarm from '../pages/Alarms';
 import Loading from '../pages/Loading';
 import Post from '../pages/Post';
 import Glossary from '../pages/Glossary';
+import Collection from '../pages/Collection';
+import Collections from '../pages/Collections';
 
 Vue.use(Router);
 Vue.use(VueAwesomeSwiper);
@@ -99,6 +101,16 @@ const router = new Router({
       name: 'Help',
       component: Help,
     },
+    {
+      path: '/collection',
+      name: 'Collection',
+      component: Collection,
+    },
+    {
+      path: '/collections',
+      name: 'Collections',
+      component: Collections,
+    }
   ],
 });
 

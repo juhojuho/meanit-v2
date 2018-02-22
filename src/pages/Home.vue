@@ -12,6 +12,7 @@
       <it-list>
       </it-list>
     </div>
+    <today-collections></today-collections>
     <div class="header">
       찢었다. 이 사람들...
     </div>
@@ -31,6 +32,7 @@ import Total from '../components/Total';
 import UserList from '../components/UserList';
 import TodayIts from '../components/TodayIts';
 import CustomFooter from '../components/CustomFooter';
+import TodayCollections from '../components/TodayCollections';
 
 export default {
   components: {
@@ -41,6 +43,7 @@ export default {
     UserList,
     TodayIts,
     CustomFooter,
+    TodayCollections,
   },
   /*
   created() {
