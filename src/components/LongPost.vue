@@ -14,7 +14,7 @@
       <div class="text" id="beforeIframely">
         {{ post.text }}
       </div>
-      <div v-show="!loading" class="url" id="iframely" @click="sendEvent">
+      <div class="url" id="iframely" @click="sendEvent">
         <a :href="post.url" data-iframely-url class="iframely">
         </a>
       </div>
@@ -116,6 +116,7 @@ export default {
           }
         }
       });
+    console.log(this.post.url);
     window.iframely.load();
   },
   methods: {
@@ -167,19 +168,11 @@ export default {
                 return kk;
               });
           } else {
-            this.$db
-              .ref(
-                `/users/${this.currUser.uid}/kks/${this.post.name}/${
-                  this.post.pid
-                }`
-              )
-              .set({
-                text: this.post.text,
-                timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
-                kk: 1,
-                nickname: this.currUser.nickname,
-                uid: this.userInfo.uid
-              });
+            this.$db.ref(`/userKKs/${this.currUser.uid}/${this.post.pid}`).set({
+              timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
+              uid: this.userInfo.uid,
+              it: this.post.name
+            });
             this.initiated = true;
           }
           this.$db

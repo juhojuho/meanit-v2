@@ -39,6 +39,13 @@ Vue.prototype.$db = db;
 Vue.prototype.$storage = storage;
 Vue.prototype.$axios = axios;
 
+db.ref('/its').once('value').then((snapshot) => {
+  const its = snapshot.val();
+  if (its) {
+    store.commit('setIts', Object.keys(its));
+  }
+});
+
 Firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     console.log('Authentication Finished');
@@ -47,9 +54,7 @@ Firebase.auth().onAuthStateChanged((user) => {
       if (data) {
         data.uid = user.uid;
         store.commit('change', data);
-        if (!data.addNickname) {
-          router.push('/signup');
-        } else if (router.currentRoute.path === '/loading') {
+        if (router.currentRoute.path === '/loading') {
           router.push('/');
         }
       } else {
@@ -70,12 +75,6 @@ Firebase.auth().onAuthStateChanged((user) => {
           }
         });
       });
-    db.ref('/its').once('value').then((snapshot) => {
-      const its = snapshot.val();
-      if (its) {
-        store.commit('setIts', Object.keys(its));
-      }
-    });
   }
 });
 

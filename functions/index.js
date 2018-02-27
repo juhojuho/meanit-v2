@@ -9,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const http = require('http');
-const download = require('download-file')
+const download = require('download-file');
 const request = require('request');
 
 
@@ -303,9 +303,11 @@ exports.isValid = functions.https.onRequest((req, res) => {
     const api_key = 'ecb6fecc9a157ce8a0877a';
     axios.get(`http://iframe.ly/api/iframely?url=${url}&api_key=${api_key}`)
       .then((mediaRes) => {
+        console.log(true);
         res.json({ valid: true });
       })
       .catch((error) => {
+        console.log(false);
         res.json({ valid: false })
       });
   });
@@ -315,7 +317,7 @@ exports.getIframely = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     const url = urlencode(req.query.url);
     const api_key = 'ecb6fecc9a157ce8a0877a';
-    axios.get(`http://iframe.ly/api/iframely?api_key=${api_key}&url=${url}`)
+    axios.get(`http://iframe.ly/api/iframely?url=${url}&api_key=${api_key}`)
       .then((mediaRes) => {
         console.log(mediaRes.data);
         res.send(mediaRes.data);

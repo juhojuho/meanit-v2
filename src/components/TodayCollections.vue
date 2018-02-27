@@ -1,5 +1,8 @@
 <template>
   <div class="today-collections-container">
+    <div class="collection-header">
+      복잡한 뉴스를 키워드 중심으로 쉽게 풀어보자
+    </div>
     <swiper :options="swiperOption" :not-next-tick="notNextTick" ref="collectionSwiper" class="swiper">
       <swiper-slide v-for="(collection, index) in collections" :key="index">
         <today-collection :collection="collection">
@@ -81,7 +84,7 @@ export default {
 
 <style scoped>
 .today-collections-container {
-  margin-top: 30px;
+  margin-top: 40px;
 }
 
 .swiper-slide {
@@ -116,5 +119,11 @@ export default {
   border: solid 1px #e3e3e3;
   text-align: center;
   padding-top: 30px;
+}
+
+.collection-header {
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 600;
 }
 </style>

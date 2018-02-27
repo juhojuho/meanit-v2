@@ -8,7 +8,12 @@
     <div class="sub-title">
       마음에 드는 포스트에 너의 ㅋ를 날려봐.
     </div>
-    <div style="text-align: right; margin-bottom: 9px;">
+    <div v-if="filteredSynonym.length">
+      <router-link v-for="(synonym, index) in filteredSynonym" :key="index" class="ss" :to="'/loading?next=' + synonym.synonym">
+        {{ synonym.synonym }}
+      </router-link>
+    </div>
+    <div style="text-align: right; margin-top: 20px; margin-bottom: 9px;">
       <img v-if="order === 'kk'" src="../assets/images/icon-order-by-kk-on.png" class="icon-sorting">
       <img v-if="order === 'kk'" src="../assets/images/icon-order-by-time-off.png" class="icon-sorting" @click="sortByTime">
       <img v-if="order === 'time'" src="../assets/images/icon-order-by-kk-off.png" class="icon-sorting" @click="sortByKk">
@@ -18,8 +23,8 @@
     </long-post>
     <long-post v-for="(post, index) in posts" :post="post" :key="index" :userInfo="postsUserInfo[index]" :index="index" :itTop="false" :isLong="true" style="margin-bottom: 20px"></long-post>
     <div style="padding-left: 20px; padding-right: 20px;">
-      <div v-if="synonyms.length" class="synonym-header">
-        <b>{{ it }}</b>와(과) 연관된 다른 it
+      <div class="synonym-header">
+        <b>야 일찍 일어나야 성공해 안 그래? 이런 it은 어때?</b>
       </div>
       <synonym :synonyms="synonyms" style="margin-bottom: 48px;"></synonym>
     </div>
@@ -59,6 +64,11 @@ export default {
     its() {
       return this.$store.state.its;
     },
+    filteredSynonym() {
+      return this.synonyms.filter(synonym => {
+        return this.its.includes(synonym.synonym);
+      });
+    }
   },
   created() {
     if (this.$route.query.sort === "time") {
@@ -281,17 +291,16 @@ export default {
   font-size: 14px;
   font-weight: 300;
   color: #393939;
-  margin-bottom: 23px;
+  margin-bottom: 18px;
 }
 
 .synonym-header {
   font-size: 16px;
   font-weight: normal;
   color: #393939;
-  margin-bottom: 12px;
-  width: 80%;
+  margin-bottom: 16px;
   text-align: left;
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 .button {
@@ -330,5 +339,21 @@ export default {
   right: 13px;
   padding-bottom: 40px;
   cursor: pointer;
+}
+
+.s {
+  font-size: 14px;
+  font-weight: 300;
+  color: #393939;
+  margin-bottom: 8px;
+}
+
+.ss {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: bold;
+  color: #ff0072;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 </style>

@@ -45,7 +45,7 @@
         <img v-if="order === 'alphabet'" src="../assets/images/icon-order-by-name-pink-on.png" class="icon-sorting" style="margin-right: 0px;">
       </div>
       <template v-if="option === 'write'">
-        <line-post v-for="(post, key, index) in its" :key="index" :it="post.it" :text="post.text" :postKey="post.pid">
+        <line-post v-for="(post, key, index) in its" :key="index" :it="post.name" :text="post.text" :postKey="post.pid">
         </line-post>
       </template>
     </div>
@@ -122,16 +122,28 @@ export default {
         this.userInfo = snapshot.val();
       });
     this.$db
-      .ref(`/users/${this.$route.params.uid}/its`)
+      .ref(`userIts/${this.$route.params.uid}`)
       .once("value")
       .then(snapshot => {
+        const its = snapshot.val();
         snapshot.forEach(childSnapshot => {
+          const pid = childSnapshot.key;
+          this.$db.ref(`/it/${pid}`).once('value').then((itSnapshot) => {
+            const it = itSnapshot.val();
+            if (it){
+              it.pid = pid;
+              this.its.push(it);
+              this.its.sort(this.sortByTime);
+            }
+          });
+          /*
           childSnapshot.forEach(a => {
             this.its.push(
               Object.assign({}, a.val(), { pid: a.key, it: childSnapshot.key })
             );
             this.its.sort(this.sortByTime);
           });
+          */
         });
       });
     this.$db

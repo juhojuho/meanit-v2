@@ -4,7 +4,7 @@
     <search></search>
     <div class="container">
       <div v-for="(collection, index) in collections" :key="index" class="collection-container">
-        <div class="it-button" @click="clickItButton(collection.key, index)">
+        <div class="it-button" @click="clickItButton(collection.key)">
           {{ collection.title }}
         </div>
         <div class="description">
@@ -59,8 +59,8 @@ export default {
     }
   },
   methods: {
-    clickItButton(key, index) {
-      this.$router.push(`/collection?cid=${key}&prev=${this.collections[(index - 1) % this.collections.length].key}&next=${this.collections[(index + 1) % this.collections.length].key}`);
+    clickItButton(key) {
+      this.$router.push(`/collection?cid=${key}`);
     },
   },
 };

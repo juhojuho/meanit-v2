@@ -7,17 +7,20 @@
         <div class="title">
           {{ title }}
         </div>
-        <img src="../assets/images/right.png" class="right-button" @click="$router.push(`/collection?cid=${next}`)">
-        <img src="../assets/images/left.png" class="left-button" @click="$router.push(`/collection?cid=${prev}`)">
+        <img v-if="false" src="../assets/images/right.png" class="right-button" @click="$router.push(`/collection?cid=${next}`)">
+        <img v-if="false" src="../assets/images/left.png" class="left-button" @click="$router.push(`/collection?cid=${prev}`)">
+        <div class="description">
+          {{ description }}
+        </div>
       </div>
       <div class="it-container">
         <div class="sub-title">
-          이것만 알면 돼! 제목을 지어야함
+          여기 있는 것만 알아도 다 안다고 할 수 있지
         </div>
         <div v-for="(it, index) in itList" :key="index">
-          <router-link class="it" :to="'#' + index">
+          <a class="it" :href="'collection?cid='+$route.query.cid+'#'+index">
             {{ it }}
-          </router-link>
+          </a>
           <br>
         </div>
         <square-loader :loading="loader.loading" :color="loader.color" :size="loader.size" style="margin-top: 40px; margin-bottom: 20px;"></square-loader>
@@ -66,6 +69,7 @@ export default {
   data() {
     return {
       title: "",
+      description: "",
       itList: [],
       posts: [],
       loader: {
@@ -97,6 +101,7 @@ export default {
         const collection = collectionSnapshot.val();
         if (collection) {
           this.title = collection.title;
+          this.description = collection.description;
           collection.itList.forEach((pid, index) => {
             this.$db
               .ref(`/it/${pid}`)
@@ -166,6 +171,12 @@ export default {
   font-size: 20px;
   font-weight: bold;
   color: #393939;
+}
+
+.description {
+  color: #393939;
+  margin-top: 16px;
+  font-weight: 600;
 }
 
 .left-button {

@@ -1,7 +1,7 @@
 <template>
   <div class="today-collection-container">
     <div class="today-collection-title">
-      오늘의 it 콜렉션!
+      {{ collection.description }}
     </div>
     <br>
     <router-link class="today-collection-button" :to="'/collection?cid=' + collection.key">{{ collection.title }}</router-link>

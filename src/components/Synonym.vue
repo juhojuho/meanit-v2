@@ -1,9 +1,9 @@
 <template>
-  <div v-if="synonyms.length" class="synonym-container">
+  <div class="synonym-container">
     <swiper :options="synonymSwiperOption" :not-next-tick="notNextTick" ref="synonymSwiper">
-      <swiper-slide v-for="(synonym, key) in synonyms" :key="key">
-        <div class="synonym" @click="toItPage(synonym.synonym)">
-          {{ synonym.synonym }}
+      <swiper-slide v-for="(it, key) in randomIts" :key="key">
+        <div class="synonym" @click="toItPage(it)">
+          {{ it }}
         </div>
       </swiper-slide>
     </swiper>
@@ -24,7 +24,6 @@ export default {
       }
     };
   },
-  props: ["synonyms"],
   components: {
     swiper,
     swiperSlide
@@ -33,6 +32,17 @@ export default {
     swiper() {
       return this.$refs.synonymSwiper.swiper;
     },
+    its() {
+      return this.$store.state.its;
+    },
+    randomIts() {
+      const temp = [];
+      for (let i = 0; i < 10; i ++) {
+        const random = Math.floor(Math.random() * this.its.length);
+        temp.push(this.its[random]);
+      }
+      return temp;
+    }
   },
   methods: {
     toItPage(synonym) {
@@ -66,7 +76,7 @@ export default {
   background-color: #ffffff;
   box-shadow: 6px 6px 0 0 #d9d9d9;
   border: solid 1px #ebebeb;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
   color: #393939;
   text-align: center;

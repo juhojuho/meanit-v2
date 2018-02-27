@@ -155,10 +155,7 @@ export default {
         const newKey = this.$db.ref(`its/${this.newIt}/`).push().key;
         this.$db.ref(`its/${this.newIt}/${newKey}`).set(true);
         this.$db.ref(`search/${this.newIt}`).set(true);
-        this.$db.ref(`users/${user.uid}/its/${this.newIt}/${newKey}`).set({
-          text: this.newDescription,
-          timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
-        });
+        this.$db.ref(`/userIts/${user.uid}/${newKey}`).set(this.newIt);
         this.$db.ref(`/users/${user.uid}/num_it`).transaction((num) => {
           if (num !== null) {
             num += 1;
@@ -184,7 +181,9 @@ export default {
       this.loading = true;
       this.warningMessage = '';
       this.showWarningMessage = false;
-      this.$axios.get(`https://us-central1-meanit-91a3c.cloudfunctions.net/isValid?url=${this.newLink}`).then((res) => {
+      const encodedUrl = encodeURIComponent(this.newLink);
+      console.log(encodedUrl);
+      this.$axios.get(`https://us-central1-meanit-91a3c.cloudfunctions.net/isValid?url=${encodedUrl}`).then((res) => {
         if (res.data.valid) {
           this.isValidUrl = true;
           this.loading = false;
@@ -194,7 +193,6 @@ export default {
         } else {
           this.warningMessage = '한 끗이 유효하지 않습니다.';
           this.showWarningMessage = true;
-          this.isValidUrl = false;
           this.loading = false;
         }
       });
