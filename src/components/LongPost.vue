@@ -43,7 +43,7 @@ export default {
       color: "#ff0072",
       size: "20px",
       loading: true,
-      url: ""
+      url: "https://firebasestorage.googleapis.com/v0/b/meanit-91a3c.appspot.com/o/profile%2Frandom1.png?alt=media&token=a36548ee-8375-4cd7-afad-5dd13e1c2745"
     };
   },
   props: ["post", "userInfo", "isTop", "index"],
@@ -156,11 +156,7 @@ export default {
           });
           if (this.initiated) {
             this.$db
-              .ref(
-                `/users/${this.currUser.uid}/kks/${this.post.name}/${
-                  this.post.pid
-                }/kk`
-              )
+              .ref(`/userKKs/${this.currUser.uid}/${this.post.pid}/kk`)
               .transaction(kk => {
                 if (kk !== null) {
                   kk += 1;
@@ -171,7 +167,8 @@ export default {
             this.$db.ref(`/userKKs/${this.currUser.uid}/${this.post.pid}`).set({
               timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
               uid: this.userInfo.uid,
-              it: this.post.name
+              it: this.post.name,
+              kk: 1
             });
             this.initiated = true;
           }
@@ -214,21 +211,13 @@ export default {
       const user = this.$store.state.user;
       if (user) {
         if (!this.bookmarked) {
-          this.$db
-            .ref(
-              `/users/${user.uid}/bookmarks/${this.post.name}/${this.post.pid}`
-            )
-            .set({
-              text: this.post.text,
-              timestamp: this.$firebase.database.ServerValue.TIMESTAMP
-            });
+          this.$db.ref(`/userBookmarks/${user.uid}/${this.post.pid}`).set({
+            it: this.post.name,
+            timestamp: this.$firebase.database.ServerValue.TIMESTAMP
+          });
           this.bookmarked = true;
         } else {
-          this.$db
-            .ref(
-              `/users/${user.uid}/bookmarks/${this.post.name}/${this.post.pid}`
-            )
-            .set(null);
+          this.$db.ref(`/userBookmarks/${user.uid}/${this.post.pid}`).set(null);
           this.bookmarked = false;
         }
       } else {

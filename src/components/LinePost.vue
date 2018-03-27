@@ -5,7 +5,7 @@
       <div v-if="!folded" class="text">{{ text }}</div>
       <div v-if="folded" class="text" style="width: 190px;"></div>
       <img v-if="!folded" src="../assets/images/unfold-red.png" class="unfold" @click="fold">
-      <img v-if="folded" src="../assets/images/fold-red.png" class="unfold" @click="unfold">
+      <img v-if="false" src="../assets/images/fold-red.png" class="unfold" @click="unfold">
     </div>
     <div v-show="folded" class="post">
       <long-post v-for="(userInfo, index) in userInfo" :post="post" :userInfo="userInfo" :isTop="false" :isLong="false" :index="post.pid" :key="index"></long-post>

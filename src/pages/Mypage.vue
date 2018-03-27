@@ -50,11 +50,11 @@
       </template>
     </div>
     <template v-if="option === 'kk'">
-      <line-post v-for="(post, key, index) in kks" :key="index" :it="post.it" :text="post.text" :postKey="post.pid">
+      <line-post v-for="(post, key, index) in kks" :key="index" :it="post.name" :text="post.text" :postKey="post.pid">
       </line-post>
     </template>
     <template v-if="option === 'bookmark'">
-      <line-post v-for="(post, key, index) in bookmarks" :key="index" :it="post.it" :text="post.text" :postKey="post.pid">
+      <line-post v-for="(post, key, index) in bookmarks" :key="index" :it="post.name" :text="post.text" :postKey="post.pid">
       </line-post>
     </template>
     <div v-if="!showSortingIcons" class="container-no-it">
@@ -92,7 +92,7 @@ export default {
       bookmarks: [],
       order: "time",
       show: false,
-      url: '',
+      url: ""
     };
   },
   computed: {
@@ -125,51 +125,57 @@ export default {
       .ref(`userIts/${this.$route.params.uid}`)
       .once("value")
       .then(snapshot => {
-        const its = snapshot.val();
         snapshot.forEach(childSnapshot => {
           const pid = childSnapshot.key;
-          this.$db.ref(`/it/${pid}`).once('value').then((itSnapshot) => {
-            const it = itSnapshot.val();
-            if (it){
-              it.pid = pid;
-              this.its.push(it);
-              this.its.sort(this.sortByTime);
-            }
-          });
-          /*
-          childSnapshot.forEach(a => {
-            this.its.push(
-              Object.assign({}, a.val(), { pid: a.key, it: childSnapshot.key })
-            );
-            this.its.sort(this.sortByTime);
-          });
-          */
+          this.$db
+            .ref(`/it/${pid}`)
+            .once("value")
+            .then(itSnapshot => {
+              const it = itSnapshot.val();
+              if (it) {
+                it.pid = pid;
+                this.its.push(it);
+                this.its.sort(this.sortByTime);
+              }
+            });
         });
       });
     this.$db
-      .ref(`/users/${this.$route.params.uid}/kks`)
+      .ref(`/userKKs/${this.$route.params.uid}`)
       .once("value")
       .then(snapshot => {
         snapshot.forEach(childSnapshot => {
-          childSnapshot.forEach(a => {
-            this.kks.push(
-              Object.assign({}, a.val(), { pid: a.key, it: childSnapshot.key })
-            );
-            this.kks.sort(this.sortByTime);
-          });
+          const pid = childSnapshot.key;
+          this.$db
+            .ref(`/it/${pid}`)
+            .once("value")
+            .then(itSnapshot => {
+              const it = itSnapshot.val();
+              if (it) {
+                it.pid = pid;
+                this.kks.push(it);
+                this.kks.sort(this.sortByTime);
+              }
+            });
         });
       });
     this.$db
-      .ref(`/users/${this.$route.params.uid}/bookmarks`)
+      .ref(`/userBookmarks/${this.$route.params.uid}`)
       .once("value")
       .then(snapshot => {
         snapshot.forEach(childSnapshot => {
-          childSnapshot.forEach(a => {
-            this.bookmarks.push(
-              Object.assign({}, a.val(), { pid: a.key, it: childSnapshot.key })
-            );
-            this.bookmarks.sort(this.sortByTime);
-          });
+          const pid = childSnapshot.key;
+          this.$db
+            .ref(`/it/${pid}`)
+            .once("value")
+            .then(itSnapshot => {
+              const it = itSnapshot.val();
+              if (it) {
+                it.pid = pid;
+                this.bookmarks.push(it);
+                this.bookmarks.sort(this.sortByTime);
+              }
+            });
         });
       });
     this.$db
@@ -188,7 +194,9 @@ export default {
           } else {
             this.$storage
               .refFromURL(
-                `gs://meanit-91a3c.appspot.com/profile/${this.$route.params.uid}`
+                `gs://meanit-91a3c.appspot.com/profile/${
+                  this.$route.params.uid
+                }`
               )
               .getMetadata()
               .then(metadata => {

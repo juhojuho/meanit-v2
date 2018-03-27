@@ -52,31 +52,31 @@
 </template>
 
 <script>
-import SquareLoader from 'vue-spinner/src/SquareLoader';
-import Search from '../components/Search';
-import Navigation from '../components/Navigation';
+import SquareLoader from "vue-spinner/src/SquareLoader";
+import Search from "../components/Search";
+import Navigation from "../components/Navigation";
 
 export default {
   data() {
     return {
-      newIt: '',
-      newDescription: '',
-      newSynonym: '',
-      newQuery: '',
+      newIt: "",
+      newDescription: "",
+      newSynonym: "",
+      newQuery: "",
       synonyms: [],
-      newLink: '',
-      helperType: '',
+      newLink: "",
+      helperType: "",
       open: false,
       suggestions: [],
-      api: 'https://api.meanit.me',
+      api: "https://api.meanit.me",
       isValidUrl: false,
       searchResult: {},
       selectedResult: -1,
-      warningMessage: '',
+      warningMessage: "",
       showWarningMessage: false,
       loading: false,
-      color: '#ff0072',
-      size: '20px',
+      color: "#ff0072",
+      size: "20px"
     };
   },
   computed: {
@@ -84,34 +84,34 @@ export default {
       return this.newDescription.length;
     },
     matches() {
-      return this.suggestions.filter(str =>
-        str.indexOf(this.newSynonym) >= 0,
-      );
+      return this.suggestions.filter(str => str.indexOf(this.newSynonym) >= 0);
     },
     openSuggestion() {
-      return this.newSynonym !== '' &&
+      return (
+        this.newSynonym !== "" &&
         this.matches.length !== 0 &&
-        this.open === true;
+        this.open === true
+      );
     },
     qualified() {
       if (!this.newIt) {
-        this.warningMessage = '단어를 입력해 주세요.';
+        this.warningMessage = "단어를 입력해 주세요.";
         return false;
       } else if (this.letterCount > 200) {
-        this.warningMessage = '미닝이 200자를 초과했습니다.';
+        this.warningMessage = "미닝이 200자를 초과했습니다.";
         return false;
       } else if (!this.newDescription) {
-        this.warningMessage = '미닝을 입력해 주세요.';
+        this.warningMessage = "미닝을 입력해 주세요.";
         return false;
       } else if (!this.synonyms.length) {
-        this.warningMessage = '연관된 단어를 적어도 하나 입력해 주세요.';
+        this.warningMessage = "연관된 단어를 적어도 하나 입력해 주세요.";
         return false;
       } else if (this.newLink && !this.isValidUrl) {
-        this.warningMessage = '한 끗이 유효하지 않습니다.';
+        this.warningMessage = "한 끗이 유효하지 않습니다.";
         return false;
       }
       return true;
-    },
+    }
   },
   created() {
     this.newIt = this.$route.query.it;
@@ -125,8 +125,12 @@ export default {
     },
     typingSynonym(e) {
       this.newSynonym = e.target.value;
-      this.$db.ref('/search').orderByKey().startAt(this.newSynonym).limitToFirst(10)
-        .once('value', (snapshot) => {
+      this.$db
+        .ref("/search")
+        .orderByKey()
+        .startAt(this.newSynonym)
+        .limitToFirst(10)
+        .once("value", snapshot => {
           this.suggestions = Object.keys(snapshot.val());
         });
     },
@@ -144,7 +148,7 @@ export default {
     suggestionClick(suggestion) {
       this.open = false;
       this.synonyms.push(suggestion);
-      this.newSynonym = '';
+      this.newSynonym = "";
     },
     removeSynonym(index) {
       this.synonyms.splice(index, 1);
@@ -155,54 +159,64 @@ export default {
         const newKey = this.$db.ref(`its/${this.newIt}/`).push().key;
         this.$db.ref(`its/${this.newIt}/${newKey}`).set(true);
         this.$db.ref(`search/${this.newIt}`).set(true);
-        this.$db.ref(`/userIts/${user.uid}/${newKey}`).set(this.newIt);
-        this.$db.ref(`/users/${user.uid}/num_it`).transaction((num) => {
+        this.$db.ref(`/userIts/${user.uid}/${newKey}`).set({
+          it: this.newIt,
+          timestamp: this.$firebase.database.ServerValue.TIMESTAMP
+        });
+        this.$db.ref(`/users/${user.uid}/num_it`).transaction(num => {
           if (num !== null) {
             num += 1;
           }
           return num;
         });
-        this.$db.ref(`/it/${newKey}`).set({
-          text: this.newDescription,
-          timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
-          url: this.newLink,
-          hashtags: this.synonyms,
-          name: this.newIt,
-          user_id: user.uid,
-          kk: 0,
-        }).then(() => {
-          this.$router.push(`/it/${this.newIt}`);
-        });
+        this.$db
+          .ref(`/it/${newKey}`)
+          .set({
+            text: this.newDescription,
+            timestamp: this.$firebase.database.ServerValue.TIMESTAMP,
+            url: this.newLink,
+            hashtags: this.synonyms,
+            name: this.newIt,
+            user_id: user.uid,
+            kk: 0
+          })
+          .then(() => {
+            this.$router.push(`/it/${this.newIt}`);
+          });
       } else {
         this.showWarningMessage = true;
       }
     },
     sendValidation() {
       this.loading = true;
-      this.warningMessage = '';
+      this.warningMessage = "";
       this.showWarningMessage = false;
       const encodedUrl = encodeURIComponent(this.newLink);
       console.log(encodedUrl);
-      this.$axios.get(`https://us-central1-meanit-91a3c.cloudfunctions.net/isValid?url=${encodedUrl}`).then((res) => {
-        if (res.data.valid) {
-          this.isValidUrl = true;
-          this.loading = false;
-          setTimeout(() => {
-            window.iframely.load();
-          }, 100);
-        } else {
-          this.warningMessage = '한 끗이 유효하지 않습니다.';
-          this.showWarningMessage = true;
-          this.loading = false;
-        }
-      });
-    },
+      this.$axios
+        .get(
+          `https://us-central1-meanit-91a3c.cloudfunctions.net/isValid?url=${encodedUrl}`
+        )
+        .then(res => {
+          if (res.data.valid) {
+            this.isValidUrl = true;
+            this.loading = false;
+            setTimeout(() => {
+              window.iframely.load();
+            }, 100);
+          } else {
+            this.warningMessage = "한 끗이 유효하지 않습니다.";
+            this.showWarningMessage = true;
+            this.loading = false;
+          }
+        });
+    }
   },
   components: {
     Navigation,
     Search,
-    SquareLoader,
-  },
+    SquareLoader
+  }
 };
 </script>
 
@@ -220,7 +234,7 @@ export default {
 .it-input {
   width: 321px;
   height: 45px;
-  background: url('../assets/images/it-placeholder.png') center center no-repeat;
+  background: url("../assets/images/it-placeholder.png") center center no-repeat;
   background-size: cover;
   padding: 13px;
   resize: none;
@@ -234,7 +248,8 @@ export default {
 .description-input {
   width: 321px;
   height: 176px;
-  background: url('../assets/images/description-placeholder.png') center center no-repeat;
+  background: url("../assets/images/description-placeholder.png") center center
+    no-repeat;
   background-size: cover;
   padding: 13px;
   resize: none;
@@ -248,7 +263,8 @@ export default {
   height: 45px;
   display: block;
   margin: 12px auto 0px auto;
-  background: url('../assets/images/synonym-placeholder.png') center center no-repeat;
+  background: url("../assets/images/synonym-placeholder.png") center center
+    no-repeat;
   background-size: cover;
   padding: 13px;
   resize: none;
@@ -261,7 +277,7 @@ export default {
   position: relative;
   width: 282px;
   height: 45px;
-  background: url('../assets/images/link-placeholder.png') left center no-repeat;
+  background: url("../assets/images/link-placeholder.png") left center no-repeat;
   background-size: cover;
   padding: 13px;
   resize: none;
@@ -275,7 +291,8 @@ export default {
   position: relative;
   width: 321px;
   height: 45px;
-  background: url('../assets/images/search-placeholder.png') 13px center no-repeat;
+  background: url("../assets/images/search-placeholder.png") 13px center
+    no-repeat;
   background-size: 170px auto;
   padding: 13px;
   resize: none;

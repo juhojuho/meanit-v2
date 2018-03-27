@@ -100,6 +100,19 @@ export default {
         snapshot.forEach(childSnapshot => {
           const data = childSnapshot.val();
           data.uid = childSnapshot.key;
+          if (data.img_url) {
+            if (data.img_url === "random") {
+              data.img_url =
+                "https://firebasestorage.googleapis.com/v0/b/meanit-91a3c.appspot.com/o/profile%2Frandom1.png?alt=media&token=a36548ee-8375-4cd7-afad-5dd13e1c2745";
+            } else {
+              this.$storage
+                .refFromURL(`gs://meanit-91a3c.appspot.com/profile/${data.uid}`)
+                .getMetadata()
+                .then(metadata => {
+                  data.img_url = metadata.downloadURLs[0];
+                });
+            }
+          }
           this.scoreTopList.unshift(data);
         });
       });
@@ -112,6 +125,19 @@ export default {
         snapshot.forEach(childSnapshot => {
           const data = childSnapshot.val();
           data.uid = childSnapshot.key;
+          if (data.img_url) {
+            if (data.img_url === "random") {
+              data.img_url =
+                "https://firebasestorage.googleapis.com/v0/b/meanit-91a3c.appspot.com/o/profile%2Frandom1.png?alt=media&token=a36548ee-8375-4cd7-afad-5dd13e1c2745";
+            } else {
+              this.$storage
+                .refFromURL(`gs://meanit-91a3c.appspot.com/profile/${data.uid}`)
+                .getMetadata()
+                .then(metadata => {
+                  data.img_url = metadata.downloadURLs[0];
+                });
+            }
+          }
           this.kkTopList.unshift(data);
         });
       });
@@ -124,6 +150,19 @@ export default {
         snapshot.forEach(childSnapshot => {
           const data = childSnapshot.val();
           data.uid = childSnapshot.key;
+          if (data.img_url) {
+            if (data.img_url === "random") {
+              data.img_url =
+                "https://firebasestorage.googleapis.com/v0/b/meanit-91a3c.appspot.com/o/profile%2Frandom1.png?alt=media&token=a36548ee-8375-4cd7-afad-5dd13e1c2745";
+            } else {
+              this.$storage
+                .refFromURL(`gs://meanit-91a3c.appspot.com/profile/${data.uid}`)
+                .getMetadata()
+                .then(metadata => {
+                  data.img_url = metadata.downloadURLs[0];
+                });
+            }
+          }
           this.itTopList.unshift(data);
         });
       });

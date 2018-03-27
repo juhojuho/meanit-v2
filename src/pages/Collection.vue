@@ -17,9 +17,9 @@
         <div class="sub-title">
           여기 있는 것만 알아도 다 안다고 할 수 있지
         </div>
-        <div v-for="(it, index) in itList" :key="index">
+        <div v-for="(post, index) in posts" :key="index">
           <a class="it" :href="'collection?cid='+$route.query.cid+'#'+index">
-            {{ it }}
+            {{ post.name }}
           </a>
           <br>
         </div>
@@ -28,7 +28,7 @@
       <div class="posts-container">
         <div v-for="(post, index) in posts" :key="index" style="margin-bottom: 86px;">
           <div class="post-container">
-            <div class="profile-container" :id="index">
+            <router-link class="profile-container" :id="index" :to="`/mypage/${post.user.uid}`">
               <img :src="post.user.img_url" class="profile">
               <div class="user-info-container">
                 <div class="nickname">
@@ -38,7 +38,7 @@
                   {{ post.date.month }}월 {{ post.date.date }}일
                 </div>
               </div>
-            </div>
+            </router-link>
             <router-link :to="'/it/' + post.name" class="post-it">
               {{ post.name }}
             </router-link>
@@ -78,7 +78,7 @@ export default {
         size: "40px"
       },
       next: 0,
-      prev: 0,
+      prev: 0
     };
   },
   components: {
@@ -88,12 +88,6 @@ export default {
   },
   created() {
     const cid = this.$route.query.cid;
-    if (this.$route.query.next) {
-      this.next = this.$route.query.next;
-    }
-    if (this.$route.query.prev) {
-      this.prev = this.$route.query.prev;
-    }
     this.$db
       .ref(`/collections/${cid}`)
       .once("value")
@@ -116,6 +110,7 @@ export default {
                       this.loader.loading = false;
                       const user = userSnapshot.val();
                       if (user) {
+                        user.uid = userSnapshot.key;
                         if (!post.timestamp) {
                           post.timestamp = 1501585200;
                         }
@@ -135,16 +130,23 @@ export default {
                               post.user = user;
                               post.pid = pid;
                               post.date = timestampToDate(post.timestamp);
-                              this.itList.push(post.name);
                               this.posts.push(post);
-                              console.log(res.data);
+                              this.posts.sort((a, b) => {
+                                return a.timestamp > b.timestamp
+                                  ? -1
+                                  : a.timestamp < b.timestamp ? 1 : 0;
+                              });
                             });
                         } else {
                           post.user = user;
                           post.pid = pid;
                           post.date = timestampToDate(post.timestamp);
-                          this.itList.push(post.name);
                           this.posts.push(post);
+                          this.posts.sort((a, b) => {
+                            return a.timestamp > b.timestamp
+                              ? -1
+                              : a.timestamp < b.timestamp ? 1 : 0;
+                          });
                         }
                       }
                     });
@@ -262,6 +264,8 @@ export default {
 
 .profile-container {
   position: absolute;
+  display: block;
+  text-decoration: none;
   top: -45px;
   left: -34px;
 }
